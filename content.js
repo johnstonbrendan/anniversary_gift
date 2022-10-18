@@ -6,6 +6,11 @@ card_in_hand_class = "css-ach1w2"
 // follow this video to setup chrome extensions:
 // https://www.youtube.com/watch?v=9Tl3OmwrSaM&list=PLRqwX-V7Uu6bL9VOMT65ahNEri9uqLWfS&index=3
 
+console.log("started")
+
+// refactor code to run on a run / don't run flag that is set in the background by checking the url with this:
+// https://itecnote.com/tecnote/javascript-how-to-listen-for-url-change-with-chrome-extension/
+
 
 
 // printAllCards()
@@ -48,7 +53,7 @@ var cardNameReplacements = {
 const M_to_H_regex =  /(\d+)M/g;
 
 // Word to replace mask with
-replaceMaskText = "Hug" // have to manually replace the first letter in the corner of cards in code below
+replaceMaskText = "Mask" // have to manually replace the first letter in the corner of cards in code below
 
 
 // https://stackoverflow.com/questions/2157963/is-it-possible-to-listen-to-a-style-change-event
@@ -102,6 +107,15 @@ var tableObserver = new MutationObserver(function(mutations) {
       // editAllMoneyCorner()
   });    
 });
+
+var maskCountsObserver = new MutationObserver(function(mutations) {
+  mutations.forEach(function(mutationRecord) {
+    console.log("numbers changed")
+    maskCountsObserver.disconnect()
+    // editMaskCountWord()
+    startMaskCountObserver()
+  })
+})
 
 // https://stackoverflow.com/questions/5525071/how-to-wait-until-an-element-exists
 waitForElementToDisplay("#your-hand",".css-1omjsz4",main,1000,1e7);
@@ -172,8 +186,9 @@ function main(hand_selector) {
     startHandObserver()
     startTableObserver()
     startPopUpObserver()
+    startMaskCountObserver()
     
-    waitForElementToDie("#other-players",waitForElementToDisplay("#your-hand",".css-1omjsz4",main,1000,1e7),3000,1e7)
+    // waitForElementToDie("#other-players",waitForElementToDisplay("#your-hand",".css-1omjsz4",main,1000,1e7),3000,1e7)
 }
 // Debug function
 function printAllCards(){
@@ -276,12 +291,24 @@ function editPopupMasksText(){
 }
 
 function editMaskCountWord(){
+  //calculate the number of cards in each players hand and number of masks lol...
+  
   var maskCounters = document.querySelectorAll('.css-rk7wlr')
   maskCounters.forEach(counter => {
+    console.log("Editing mask count hand")
     curCounterTxt = counter.innerHTML
-    counter.innerHTML = curCounterTxt.replace("Mask",replaceMaskText)
+    // counter.innerHTML = curCounterTxt.replace("Mask",replaceMaskText)
+    // counter.outerHTML="try meq"
   })
 
+}
+
+// Setup masks count observer
+function startMaskCountObserver(){
+  var maskCounts = document.querySelectorAll('.css-rk7wlr')
+  maskCounts.forEach(maskCount => {
+    maskCountsObserver.observe(maskCount, {childList : true, characterData: true , subtree : true })
+  })
 }
 
 // Setup hand observers
