@@ -6,7 +6,8 @@ card_in_hand_class = "css-ach1w2"
 // follow this video to setup chrome extensions:
 // https://www.youtube.com/watch?v=9Tl3OmwrSaM&list=PLRqwX-V7Uu6bL9VOMT65ahNEri9uqLWfS&index=3
 
-console.log("started")
+console.log("Beginning")
+
 
 // refactor code to run on a run / don't run flag that is set in the background by checking the url with this:
 // https://itecnote.com/tecnote/javascript-how-to-listen-for-url-change-with-chrome-extension/
@@ -89,7 +90,7 @@ var popUpObserver = new MutationObserver(function(mutations){
 
     startPopUpObserver()
     
-    
+
     // editAllMoneyCorner()
   })
 })
@@ -118,8 +119,8 @@ var maskCountsObserver = new MutationObserver(function(mutations) {
 })
 
 // https://stackoverflow.com/questions/5525071/how-to-wait-until-an-element-exists
-waitForElementToDisplay("#your-hand",".css-1omjsz4",main,1000,1e7);
-// Wait for game to load^^^ then run main
+// waitForElementToDisplay("#your-hand",".css-1omjsz4",game_overlay,1000,1e7);
+// Wait for game to load^^^ then run game_overlay
 
 function waitForElementToDisplay(selector1,selector2, callback, checkFrequencyInMs, timeoutInMs) {
     var startTimeInMs = Date.now();
@@ -160,10 +161,66 @@ function waitForElementToDie(selector, callback, checkFrequencyInMs, timeoutInMs
   })();
 }
 
+CHECK_FOR_WAITING_ROOM_FREQ_MS = 1000
+CHECK_FOR_GAME_FREQ_MS = 500
 
+// This is the only thing that's running
+function main(){
+  var starTimeInMs = Date.now()
+  const States = {
+    Init : 0,
+    Running : 1,
+    Stopped : 2,
+  }
+  var programState = States.Init;
+  (function loopSearch() {
+    currentUrl = window.location.toString()
+    if (currentUrl == "https://www.covidopoly.io/game" || currentUrl == "https://www.covidopoly.io/game-over") {
+      if (programState != States.Running) {
+          programState = States.Running
+          start()
+      }
+    }
+    else {
+      if (programState == States.Running){
+        stop()
+        programState = States.Stopped
+      }
+    }
+    if (programState == States.Running) {
+      setTimeout(function () {
+        loopSearch();
+      }, CHECK_FOR_WAITING_ROOM_FREQ_MS);
+    }
+    else{
+      setTimeout(function () {
+        loopSearch();
+      }, CHECK_FOR_GAME_FREQ_MS);
+
+    }
+  })()
+}
+main()
+function start(){
+  console.log("Started")
+  waitForElementToDisplay("#your-hand",".css-1omjsz4",game_overlay,200,1e7);
+}
+
+function stop(){
+  console.log("Stopped")
+  try{
+    popUpObserver.disconnect()
+    handObserver.disconnect()
+    tableObserver.disconnect()
+    maskCountsObserver.disconnect()
+  }
+  catch (error){
+    console.log(error)
+  }
+}
 
 // Main function setups the for when to do the edits
-function main(hand_selector) {
+function game_overlay(hand_selector) {
     console.log("Loaded screen")
     // hand = document.getElementById("your-hand")
     // console.log(hand)
@@ -292,7 +349,7 @@ function editPopupMasksText(){
 
 function editMaskCountWord(){
   //calculate the number of cards in each players hand and number of masks lol...
-  
+
   var maskCounters = document.querySelectorAll('.css-rk7wlr')
   maskCounters.forEach(counter => {
     console.log("Editing mask count hand")

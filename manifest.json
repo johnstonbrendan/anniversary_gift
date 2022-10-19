@@ -9,8 +9,5 @@
             ],
             "js" : ["content.js"]
         }
-    ],
-    "permissions" : [
-        "webNavigation"
     ]
 }
