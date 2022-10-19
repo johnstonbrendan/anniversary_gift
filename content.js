@@ -54,11 +54,31 @@ var cardNameReplacements = {
 const M_to_H_regex =  /(\d+)M/g;
 
 // Word to replace mask with
-replaceMaskText = "Mask" // have to manually replace the first letter in the corner of cards in code below
+replaceMaskText = "Hug" // have to manually replace the first letter in the corner of cards in code below
 
 
 // https://stackoverflow.com/questions/2157963/is-it-possible-to-listen-to-a-style-change-event
 // Make an observer to see if the cards in the hand have change
+
+function stopAllObservers(){
+  try{
+    popUpObserver.disconnect()
+    handObserver.disconnect()
+    tableObserver.disconnect()
+    maskCountsObserver.disconnect()
+  }
+  catch (error){
+    console.log(error)
+  }
+}
+
+function startAllObservers(){
+  startHandObserver()
+  startTableObserver()
+  startPopUpObserver()
+  startMaskCountObserver()
+}
+
 var handObserver = new MutationObserver(function(mutations) {
   // console.log("Here maybe")
   mutations.forEach(function(mutationRecord) {
@@ -81,14 +101,20 @@ var popUpObserver = new MutationObserver(function(mutations){
   mutations.forEach(function(mutationRecord){
     console.log("New Pop Up")
 
-    popUpObserver.disconnect()
+    stopAllObservers()
+    // popUpObserver.disconnect()
     
     editHand()
     editTable()
     editPopUpMoneyCorner()
     editMasksPopupRequestText()
+    editPopupMaskWord()
+    editTableMaskWord()
+    editTableMoneyCorner()
+    editPopupMaskCountWord()
 
-    startPopUpObserver()
+    startAllObservers()
+    // startPopUpObserver()
     
 
     // editAllMoneyCorner()
@@ -101,8 +127,7 @@ var tableObserver = new MutationObserver(function(mutations) {
       tableObserver.disconnect()
       editTable()
       editTableMoneyCorner()
-      editMaskCountWord()
-      startTableObserver()
+      editTableMaskWord()
 
       startTableObserver()
       // editAllMoneyCorner()
@@ -113,7 +138,7 @@ var maskCountsObserver = new MutationObserver(function(mutations) {
   mutations.forEach(function(mutationRecord) {
     console.log("numbers changed")
     maskCountsObserver.disconnect()
-    // editMaskCountWord()
+    // editPopupMaskCountWord()
     startMaskCountObserver()
   })
 })
@@ -208,15 +233,7 @@ function start(){
 
 function stop(){
   console.log("Stopped")
-  try{
-    popUpObserver.disconnect()
-    handObserver.disconnect()
-    tableObserver.disconnect()
-    maskCountsObserver.disconnect()
-  }
-  catch (error){
-    console.log(error)
-  }
+  stopAllObservers()
 }
 
 // Main function setups the for when to do the edits
@@ -234,16 +251,14 @@ function game_overlay(hand_selector) {
     editTableMoneyCorner()
     editHandMaskWord()
     editHandMDescrt()
-    editMaskCountWord()
+    // editPopupMaskCountWord()
+    editTableMaskWord()
 
     // hand.style.bottom = "200px"
     
 
+    startAllObservers()
     
-    startHandObserver()
-    startTableObserver()
-    startPopUpObserver()
-    startMaskCountObserver()
     
     // waitForElementToDie("#other-players",waitForElementToDisplay("#your-hand",".css-1omjsz4",main,1000,1e7),3000,1e7)
 }
@@ -301,11 +316,28 @@ function editTableMoneyCorner(){
 }
 
 function editTableMaskWord(){
+  var maskCards = document.querySelectorAll('.css-kgr8n')
+  // console.log(maskCards)
+  maskCards.forEach(card => {
+    curMaskText = card.innerHTML
+    // console.log(curMaskText)
+    card.innerHTML = curMaskText.replace("Mask",replaceMaskText)
+  })
   // TODO: make this do the table as above but with mask word
 }
 
 function editPopupMaskWord(){
-  // TODO: make this do the popup as above but with mask word
+  var window = document.querySelector('.css-vlqn3g')
+  if (window != null){
+    var maskCards = window.querySelectorAll('.css-1f7tksj')
+    // console.log(maskCards)
+    maskCards.forEach(card => {
+      curMaskText = card.innerHTML
+      // console.log(curMaskText)
+      card.innerHTML = curMaskText.replace("Mask",replaceMaskText)
+    })
+    // TODO: make this do the popup as above but with mask word
+  }
 }
 
 function editHandMaskWord(){
@@ -347,16 +379,19 @@ function editPopupMasksText(){
   // When it gives a summary of the players masks and cards when choosing who to target
 }
 
-function editMaskCountWord(){
+function editPopupMaskCountWord(){
   //calculate the number of cards in each players hand and number of masks lol...
 
-  var maskCounters = document.querySelectorAll('.css-rk7wlr')
-  maskCounters.forEach(counter => {
-    console.log("Editing mask count hand")
-    curCounterTxt = counter.innerHTML
-    // counter.innerHTML = curCounterTxt.replace("Mask",replaceMaskText)
-    // counter.outerHTML="try meq"
-  })
+  var window = document.querySelector('.css-vlqn3g')
+  if (window != null){
+    var maskCounters = window.querySelectorAll('.css-rk7wlr')
+    maskCounters.forEach(counter => {
+      console.log("Editing mask count hand")
+      curCounterTxt = counter.innerHTML
+      counter.innerHTML = curCounterTxt.replace("Mask",replaceMaskText)
+      // counter.outerHTML="try meq"
+    })
+  }
 
 }
 
