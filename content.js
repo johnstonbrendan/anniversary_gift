@@ -17,6 +17,7 @@ console.log("Beginning")
 // printAllCards()
 
 var moneyTrackDict = {}; // Populated later
+var cardTrackDict = {}; // Populated later
 
 // Name replacement dictionary, Have this imported one day
 var cardNameReplacements = {
@@ -131,6 +132,7 @@ var tableObserver = new MutationObserver(function(mutations) {
       editTable()
       editTableMoneyCorner()
       editTableMaskWord()
+      updateCardAndMaskCounter()
 
       startTableObserver()
       // editAllMoneyCorner()
@@ -283,14 +285,68 @@ function printAllMoneyCorner(){
 
 function editHandMoneyCorner(){
   handMoneyCorners = document.querySelector('#your-hand').querySelectorAll('.css-1omjsz4')
+  cardTrackDict[0] = handMoneyCorners.length
   handMoneyCorners.forEach(corner => {
-    console.log("Found corner")
-    console.log(corner)
+    // console.log("Found corner")
+    // console.log(corner)
     curHandCornerTet = corner.innerHTML
     corner.innerHTML = curHandCornerTet.replace(M_to_H_regex, '$1H')
   })
 }
 
+
+// THis is the only reason (I can think of) that you can't expand this code to more than 1v1
+// Because the way I calculate the cards in the other person's hand is: total_num_of_cards - deck - discard_pile - cards_in_your_hand
+function updateCardCounterDict(){
+  
+  totalNumberOfCards = 117
+  listNumbersDeckDiscard = getNumOfDeckAndDiscard()
+  numDeckCards = listNumbersDeckDiscard[0]
+  numDiscardCards = listNumbersDeckDiscard[1]
+  totalOtherCards = getTotalNumberOtherCards()
+  console.log(numDeckCards)
+  console.log(numDiscardCards)
+  console.log(totalOtherCards)
+  cardTrackDict[1] = totalNumberOfCards - numDeckCards - numDiscardCards - totalOtherCards
+  console.log(cardTrackDict)
+}
+
+function getTotalNumberOtherCards(){
+  allCorners = document.querySelectorAll('.css-1omjsz4')
+  // console.log(allCorners.length)
+  return allCorners.length
+
+}
+
+function getNumOfDeckAndDiscard(){
+  try{
+    deck_discard_line = document.querySelector('.css-wqp0fz').querySelector('.css-0').childNodes
+  
+    // reference https://www.w3docs.com/snippets/javascript/how-to-get-the-value-of-text-input-field-using-javascript.html
+    deck_discard_line.forEach(element =>{console.log(element.innerHTML)})
+    
+    const M_to_H_regex =  /(\d+)M/g;
+
+    deckRegex = /deck: <b>(\d*)<\/b>/;
+    discardRegex = /discard-pile: <b style="color: red;">(\d*)<\/b>/;
+
+    deck_discard_line = document.querySelector('.css-wqp0fz').querySelector('.css-0').outerHTML
+    console.log(deck_discard_line)
+    numCardsDeck = Number(deck_discard_line.match(deckRegex)[1])
+
+    numCardsDiscard = Number(deck_discard_line.match(discardRegex)[1])
+
+    console.log(numCardsDeck)
+    console.log(numCardsDiscard)
+
+    return [numCardsDeck,numCardsDiscard]
+  }
+  catch (error){
+    return [0,0]
+    console.log(error)
+  }
+
+}
 function editPopUpMoneyCorner(){
 
   var window = document.querySelector('.css-vlqn3g')
@@ -306,7 +362,7 @@ function editPopUpMoneyCorner(){
 
 
 function editTableMoneyCorner(){
-  var playersTables =  document.querySelectorAll('.player-cards.css-opvb8');
+  var playersTables =  document.querySelectorAll('.player.css-gh5bid');
   playersTables.forEach((table,playerIndex) => {
     // console.log("267")
 
@@ -318,6 +374,7 @@ function editTableMoneyCorner(){
       playerCash = playerCash + Number(curCardMoneyText.slice(0,-1)) 
       corner.innerHTML = curCardMoneyText.replace(M_to_H_regex, '$1H')
     })
+    // Update Money track dict
     moneyTrackDict[playerIndex] = playerCash
     
 
@@ -328,9 +385,14 @@ function editTableMoneyCorner(){
       curCardMoneyText = corner.innerHTML
       corner.innerHTML = curCardMoneyText.replace(M_to_H_regex, '$1H')
     })
+
+
+
   })
+  updateCardAndMaskCounter()
   console.log("money")
   console.log(moneyTrackDict)
+
 }
 
 function editTableMaskWord(){
@@ -377,6 +439,34 @@ function editHandMDescrt(){
     card.innerHTML = curMaskText.replace(M_to_H_regex, '$1H')
   })
 }
+// var ranOnce = true 
+function updateCardAndMaskCounter(){
+  // if (ranOnce){return}
+  // else{ranOnce = true}
+  updateCardCounterDict()
+  playerRoot = document.querySelectorAll('.player.css-gh5bid')
+  playerRoot.forEach((player,index) => {
+    maskCount = moneyTrackDict[index]
+    curHandCount = cardTrackDict[index]
+    cardMaskCounter = player.querySelector('.css-rk7wlr')
+    pluralHand = "s"
+    pluralMask = "s"
+    if (Number(curHandCount) == 1){
+      pluralHand = ""
+    }
+    if (Number(maskCount) == 1){
+      pluralMask = ""
+    }
+    cardMaskCounter.innerHTML = String(curHandCount) + 
+                ' card' +
+                pluralHand +
+                ' in hand | ' +
+                String(maskCount) +
+                ' Hug' +
+                pluralMask
+
+  })
+}
 
 function editPopUpMDescrt(){
 // same as above for the description like charge 5M
@@ -412,6 +502,8 @@ function editPopupMaskCountWord(){
   }
 
 }
+
+
 
 // Setup masks count observer
 function startMaskCountObserver(){
