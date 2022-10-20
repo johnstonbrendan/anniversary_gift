@@ -92,8 +92,10 @@ var handObserver = new MutationObserver(function(mutations) {
 
 
       editHand()
+      editSmallMs()
       editHandMoneyCorner()
       editHandMaskWord()
+      editHandMDescrt()
 
       // editAllMoneyCorner()
       startHandObserver()
@@ -113,9 +115,13 @@ var popUpObserver = new MutationObserver(function(mutations){
     editMasksPopupRequestText()
     editPopupMaskWord()
     editTableMaskWord()
+    editSmallMs()
     editTableMoneyCorner()
     editPopupMaskCountWord()
+    editHandMDescrt()
     editHandMoneyCorner()
+    editPopUpRentM()
+
 
     startAllObservers()
     // startPopUpObserver()
@@ -131,6 +137,7 @@ var tableObserver = new MutationObserver(function(mutations) {
       tableObserver.disconnect()
       editTable()
       editTableMoneyCorner()
+      editSmallMs()
       editTableMaskWord()
       updateCardAndMaskCounter()
 
@@ -252,6 +259,7 @@ function game_overlay(hand_selector) {
     editHand()
     editTable()
 // editAllMoneyCorner()
+    editSmallMs()
     editHandMoneyCorner()
     editTableMoneyCorner()
     editHandMaskWord()
@@ -325,7 +333,6 @@ function getNumOfDeckAndDiscard(){
     // reference https://www.w3docs.com/snippets/javascript/how-to-get-the-value-of-text-input-field-using-javascript.html
     deck_discard_line.forEach(element =>{console.log(element.innerHTML)})
     
-    const M_to_H_regex =  /(\d+)M/g;
 
     deckRegex = /deck: <b>(\d*)<\/b>/;
     discardRegex = /discard-pile: <b style="color: red;">(\d*)<\/b>/;
@@ -431,18 +438,30 @@ function editHandMaskWord(){
 }
 
 function editHandMDescrt(){
-  var maskCards = document.querySelector('#your-hand').querySelectorAll('.description.css-16s3zni')
+  var maskCards = document.querySelectorAll('.description.css-16s3zni')
   // console.log(maskCards)
   maskCards.forEach(card => {
     curMaskText = card.innerHTML
     // console.log(curMaskText)
+    curMaskText = curMaskText.replace("Mask","Hug")
     card.innerHTML = curMaskText.replace(M_to_H_regex, '$1H')
   })
 }
-// var ranOnce = true 
+
+
+function editSmallMs(){
+  allCSS = document.querySelector('.css-0').querySelectorAll('.css-0')
+  console.log('IN UPDATE SMALLMS')
+  allCSS.forEach(element => {
+    console.log('DOING SMALL UPDATES')
+    console.log(element.innerHTML)
+    curText = element.innerHTML
+    if (M_to_H_regex.test(curText)){console.log("THis will be replaced");console.log(element)}
+    // element.innerHTML = curText.replace(M_to_H_regex, '$1H')
+  })
+}
+
 function updateCardAndMaskCounter(){
-  // if (ranOnce){return}
-  // else{ranOnce = true}
   updateCardCounterDict()
   playerRoot = document.querySelectorAll('.player.css-gh5bid')
   playerRoot.forEach((player,index) => {
@@ -470,6 +489,21 @@ function updateCardAndMaskCounter(){
 
 function editPopUpMDescrt(){
 // same as above for the description like charge 5M
+}
+
+function editPopUpRentM(){
+  try{
+    rentLine = document.querySelector('.css-8qbqv4')
+    console.log("RENT LINe")
+    console.log(rentLine)
+    M_bold_to_H_regex = /<b>(\d*)M<\/b>/
+    curText = rentLine.innerHTML
+    console.log(curText.replace(M_bold_to_H_regex,'<b>$1H</b>'))
+    rentLine.innerHTML = curText.replace(M_bold_to_H_regex,'<b>$1H</b>')
+  }
+  catch (error){
+    console.log(error)
+  }
 }
 
 function editMasksPopupRequestText(){ // Note this doesn't work for the rainbow rent cards. Would have to dig through a lot of layers
