@@ -365,6 +365,15 @@ function editPopUpMoneyCorner(){
       corner.innerHTML = curPopUpCornerTet.replace(M_to_H_regex, '$1H')
     })
   }
+  var endGame = document.querySelector('.css-ysssjg')
+  if (endGame != null){
+    popUpMoneyCorners = endGame.querySelectorAll('.css-1omjsz4')
+    
+    popUpMoneyCorners.forEach(corner => {
+      curPopUpCornerTet = corner.innerHTML
+      corner.innerHTML = curPopUpCornerTet.replace(M_to_H_regex, '$1H')
+    })
+  }
 }
 
 
@@ -456,8 +465,11 @@ function editSmallMs(){
     console.log('DOING SMALL UPDATES')
     console.log(element.innerHTML)
     curText = element.innerHTML
-    if (M_to_H_regex.test(curText)){console.log("THis will be replaced");console.log(element)}
-    // element.innerHTML = curText.replace(M_to_H_regex, '$1H')
+    if (M_to_H_regex.test(curText)){
+      console.log("THis will be replaced");
+      console.log(element);
+      element.innerHTML = curText.replace(M_to_H_regex, '$1H')}
+
   })
 }
 
@@ -622,3 +634,12 @@ function editHand(){
 
 
 
+// TODO: Improvement
+/*
+Need to somehow get the number of cards for opponent in N players
+noticed that if you change that text it doesn't get updated properly down the line. probably a formatting thing.
+
+need to change the small counter when you're paying rent
+
+
+*/
