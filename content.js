@@ -16,6 +16,8 @@ console.log("Beginning")
 
 // printAllCards()
 
+var moneyTrackDict = {}; // Populated later
+
 // Name replacement dictionary, Have this imported one day
 var cardNameReplacements = {
   "Immunity Place" : "Sayulita",
@@ -81,7 +83,7 @@ function startAllObservers(){
 
 var handObserver = new MutationObserver(function(mutations) {
   // console.log("Here maybe")
-  mutations.forEach(function(mutationRecord) {
+  mutations.every(function(mutationRecord) {
       console.log('hand changed!');
 
 
@@ -98,7 +100,7 @@ var handObserver = new MutationObserver(function(mutations) {
 });
 
 var popUpObserver = new MutationObserver(function(mutations){
-  mutations.forEach(function(mutationRecord){
+  mutations.every(function(mutationRecord){
     console.log("New Pop Up")
 
     stopAllObservers()
@@ -112,6 +114,7 @@ var popUpObserver = new MutationObserver(function(mutations){
     editTableMaskWord()
     editTableMoneyCorner()
     editPopupMaskCountWord()
+    editHandMoneyCorner()
 
     startAllObservers()
     // startPopUpObserver()
@@ -122,7 +125,7 @@ var popUpObserver = new MutationObserver(function(mutations){
 })
 
 var tableObserver = new MutationObserver(function(mutations) {
-  mutations.forEach(function(mutationRecord) {
+  mutations.every(function(mutationRecord) {
       console.log('table changed!');
       tableObserver.disconnect()
       editTable()
@@ -135,7 +138,7 @@ var tableObserver = new MutationObserver(function(mutations) {
 });
 
 var maskCountsObserver = new MutationObserver(function(mutations) {
-  mutations.forEach(function(mutationRecord) {
+  mutations.every(function(mutationRecord) {
     console.log("numbers changed")
     maskCountsObserver.disconnect()
     // editPopupMaskCountWord()
@@ -304,15 +307,30 @@ function editPopUpMoneyCorner(){
 
 function editTableMoneyCorner(){
   var playersTables =  document.querySelectorAll('.player-cards.css-opvb8');
-  playersTables.forEach(table => {
+  playersTables.forEach((table,playerIndex) => {
     // console.log("267")
-    tableMoneyCorners = table.querySelectorAll('.css-1omjsz4')
-    tableMoneyCorners.forEach(corner => {
-      curHandCornerTet = corner.innerHTML
-      // console.log(curHandCornerTet)
-      corner.innerHTML = curHandCornerTet.replace(M_to_H_regex, '$1H')
+
+    var playerCash = 0
+    tableMoneyCardMoneyCorners = table.querySelectorAll('.css-nm7jcm')
+    tableMoneyCardMoneyCorners.forEach(moneyCard => {
+      corner = moneyCard.querySelector('.css-1omjsz4')
+      curCardMoneyText = corner.innerHTML
+      playerCash = playerCash + Number(curCardMoneyText.slice(0,-1)) 
+      corner.innerHTML = curCardMoneyText.replace(M_to_H_regex, '$1H')
+    })
+    moneyTrackDict[playerIndex] = playerCash
+    
+
+    
+    tablePropertyCardMoneyCorners = table.querySelectorAll('.css-1gy7etb')
+    tablePropertyCardMoneyCorners.forEach(PropertyCard => {
+      corner = PropertyCard.querySelector('.css-1omjsz4')
+      curCardMoneyText = corner.innerHTML
+      corner.innerHTML = curCardMoneyText.replace(M_to_H_regex, '$1H')
+    })
   })
-  })
+  console.log("money")
+  console.log(moneyTrackDict)
 }
 
 function editTableMaskWord(){
