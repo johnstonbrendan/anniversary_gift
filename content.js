@@ -640,6 +640,12 @@ Need to somehow get the number of cards for opponent in N players
 noticed that if you change that text it doesn't get updated properly down the line. probably a formatting thing.
 
 need to change the small counter when you're paying rent
+this is dynamic so would need a observer. Also changes class when reaching desired rent. Also if you edit it, it messes up.
+
+Also this code is written horribley
+
+Also also this code can be heavily optimised. Does lot's of editing in an oberver for things outside that observer
+(for example popup observer editing non popup items)
 
 
 */
