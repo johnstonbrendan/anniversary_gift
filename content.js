@@ -49,7 +49,37 @@ var cardNameReplacements = {
   "Cuomo Circle" : "Waterloo",
   "Fauci Fairway" : "Vancouver",
   "Trump Terrace" : "Mountain View",
+  "Work from Home":"Let's sleep in",
+  "ToiletPaper Stash":"Cute<br>Outfit",// Idk why the spaces didn't remove this
+  "SocialDistancing":"Staring<br>at nature",
+  "ShareScreen":"Episode?",
+  "SBALoan":"I had a rough day",
+  "No!I'm in Quarantine":"I'm not<br>a hug person", // Idk why the spaces didn't remove this
+  "I'veRecovered":"Get home from work",
+  "FalsePositive":"Let's reflect",
+  "DelayedShipment":"Sowi<br>I'm late",
+  "CrossContaminate":"Let me<br>try some",
+  "CostcoRun":"FB<br>market place deals",
+  "ContractCovid":"Cuddles?",
+  "CloseSchools":"You wash<br>I fold",
+  "CloseBusiness":"<br>Can I borrow your hoodie?",
+  "CloseBorders":"Airpor Reunion", 
+
+
+
+  // "Costco Run" : "A Good Cuddle",
+  // "Close Borders" : "Airport Reunion",
+  // "Delayed Shipment" : "Sorry I'm Late",
+  // "Share Screen" : "Scroll Together",
+
+  
+//  FINAL TODO FINAL put in the names of the cards and repalce
 };
+
+// Replace Desciptor Phrases FINAL TODO FINAL
+var descriptorDict = {
+  "test" : "test"
+}
 
 // Share hand ids css-12z5dl1
 
@@ -92,10 +122,11 @@ var handObserver = new MutationObserver(function(mutations) {
 
 
       editHand()
+      editActionHand()
       editSmallMs()
       editHandMoneyCorner()
       editHandMaskWord()
-      editHandMDescrt()
+      editDescriptors()
 
       // editAllMoneyCorner()
       startHandObserver()
@@ -110,7 +141,9 @@ var popUpObserver = new MutationObserver(function(mutations){
     // popUpObserver.disconnect()
     
     editHand()
+    editActionHand()
     editTable()
+    editActionTable()
     editPopUpMoneyCorner()
     editMasksPopupRequestText()
     editPopupMaskWord()
@@ -118,7 +151,7 @@ var popUpObserver = new MutationObserver(function(mutations){
     editSmallMs()
     editTableMoneyCorner()
     editPopupMaskCountWord()
-    editHandMDescrt()
+    editDescriptors()
     editHandMoneyCorner()
     editPopUpRentM()
 
@@ -136,6 +169,7 @@ var tableObserver = new MutationObserver(function(mutations) {
       console.log('table changed!');
       tableObserver.disconnect()
       editTable()
+      editActionTable()
       editTableMoneyCorner()
       editSmallMs()
       editTableMaskWord()
@@ -257,13 +291,15 @@ function game_overlay(hand_selector) {
     // printAllMoneyCorner()
     
     editHand()
+    editActionHand()
     editTable()
+    editActionTable()
 // editAllMoneyCorner()
     editSmallMs()
     editHandMoneyCorner()
     editTableMoneyCorner()
     editHandMaskWord()
-    editHandMDescrt()
+    editDescriptors()
     // editPopupMaskCountWord()
     editTableMaskWord()
 
@@ -446,13 +482,16 @@ function editHandMaskWord(){
   })
 }
 
-function editHandMDescrt(){
+function editDescriptors(){
   var maskCards = document.querySelectorAll('.description.css-16s3zni')
   // console.log(maskCards)
   maskCards.forEach(card => {
     curMaskText = card.innerHTML
     // console.log(curMaskText)
-    curMaskText = curMaskText.replace("Mask","Hug")
+    if (curMaskText in descriptorDict){
+      curMaskText = descriptorDict[curMaskText]
+    }
+    curMaskText = curMaskText.replace("Mask",replaceMaskText)
     card.innerHTML = curMaskText.replace(M_to_H_regex, '$1H')
   })
 }
@@ -517,6 +556,8 @@ function editPopUpRentM(){
     console.log(error)
   }
 }
+
+
 
 function editMasksPopupRequestText(){ // Note this doesn't work for the rainbow rent cards. Would have to dig through a lot of layers
   var rentRectangles = document.querySelectorAll('.css-3t37o0')
@@ -617,6 +658,33 @@ function editHand(){
    if (curCardText in cardNameReplacements){
     card.innerHTML = cardNameReplacements[curCardText]
    }
+  })
+}
+
+// Change text of all the action card names NEED THE CLASS FOR THE TABLE ACTION CARD TITLES FINAL TODO FINAL
+function editActionHand(){
+  handActionCards = document.querySelectorAll('.css-1bob0j1')
+  handActionCards.forEach(card => {
+    curCardText = card.innerHTML
+    curCardText = curCardText.replace("<br>","")
+    curCardMoneyText = curCardText.replace(" ","")
+    if (curCardText in cardNameReplacements){
+     card.innerHTML = cardNameReplacements[curCardText]
+    }
+  })
+}
+// Change text of all the action card names NEED THE CLASS FOR THE TABLE ACTION CARD TITLES FINAL TODO FINAL
+function editActionTable(){
+  handActionCards = document.querySelectorAll('.css-1bob0j1')
+  handActionCards.forEach(card => {
+    curCardText = card.innerHTML
+    curCardText = curCardText.replace("<br>","")
+    curCardText = curCardText.replace(" ","")
+    console.log("CUrrent card title")
+    console.log(curCardText)
+    if (curCardText in cardNameReplacements){
+     card.innerHTML = cardNameReplacements[curCardText]
+    }
   })
 }
 
