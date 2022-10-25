@@ -18,6 +18,7 @@ console.log("Beginning")
 
 var moneyTrackDict = {}; // Populated later
 var cardTrackDict = {}; // Populated later
+var prevGoodCardTrackDict = {}
 
 // Name replacement dictionary, Have this imported one day
 var cardNameReplacements = {
@@ -419,7 +420,7 @@ function editTableMoneyCorner(){
     // console.log("267")
 
     var playerCash = 0
-    tableMoneyCardMoneyCorners = table.querySelectorAll('.css-nm7jcm')
+    tableMoneyCardMoneyCorners = table.querySelectorAll('.css-19gpe5g')
     tableMoneyCardMoneyCorners.forEach(moneyCard => {
       corner = moneyCard.querySelector('.css-1omjsz4')
       curCardMoneyText = corner.innerHTML
@@ -427,6 +428,8 @@ function editTableMoneyCorner(){
       corner.innerHTML = curCardMoneyText.replace(M_to_H_regex, '$1H')
     })
     // Update Money track dict
+    console.log("player cash: " + String(playerCash))
+    console.log(playerCash)
     moneyTrackDict[playerIndex] = playerCash
     
 
@@ -511,13 +514,18 @@ function editSmallMs(){
 
   })
 }
-
+TOTAL_NUM_PLAYERS = 2
 function updateCardAndMaskCounter(){
   updateCardCounterDict()
   playerRoot = document.querySelectorAll('.player.css-gh5bid')
-  playerRoot.forEach((player,index) => {
+  playerRoot.forEach((player,totIndex) => {
+    index = totIndex%TOTAL_NUM_PLAYERS
     maskCount = moneyTrackDict[index]
-    curHandCount = cardTrackDict[index]
+    curHandCount = prevGoodCardTrackDict[index]
+    if (typeof (cardTrackDict[index]) !== 'undefined'){
+      curHandCount = cardTrackDict[index]
+      prevGoodCardTrackDict[index] = cardTrackDict[index]
+    }
     cardMaskCounter = player.querySelector('.css-rk7wlr')
     pluralHand = "s"
     pluralMask = "s"
@@ -527,6 +535,9 @@ function updateCardAndMaskCounter(){
     if (Number(maskCount) == 1){
       pluralMask = ""
     }
+    console.log(curHandCount)
+    console.log(cardTrackDict)
+    console.log(prevGoodCardTrackDict)
     cardMaskCounter.innerHTML = String(curHandCount) + 
                 ' card' +
                 pluralHand +
